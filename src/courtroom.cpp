@@ -1594,7 +1594,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   if (m_cid != -1) {
     QString f_blipname = ao_app->read_char_ini(f_char, "blips", "Options");
     if (f_blipname == "") {
-        f_blipname = read_char_ini(p_char, "gender", "Options");
+        f_blipname = ao_app->read_char_ini(f_char, "gender", "Options");
         if (f_blipname == "")
           f_blipname = "male";
       }
@@ -3680,11 +3680,12 @@ void Courtroom::start_chat_ticking()
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
     gen_char_rgb_list(current_misc);
 
+  QString f_blips;
   if (!ui_custom_blips->text().isEmpty()) {
-    QString f_blips = ao_app->get_custom_blips(ui_custom_blips->text());
+    f_blips = ao_app->get_custom_blips(ui_custom_blips->text());
   }
   else {
-    QString f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
+    f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
   }
   blip_player->set_blips(f_blips);
 
