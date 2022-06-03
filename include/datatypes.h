@@ -105,6 +105,7 @@ enum CHAT_MESSAGE {
   FRAME_SFX,
   ADDITIVE,
   EFFECTS,
+  BLIPNAME,
 };
 
 enum EMOTE_MOD {
