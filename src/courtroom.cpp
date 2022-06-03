@@ -177,6 +177,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_ic_chat_name->setPlaceholderText(tr("Showname"));
   ui_ic_chat_name->setText(p_ao_app->get_default_showname());
   ui_ic_chat_name->setObjectName("ui_ic_chat_name");
+  
+  ui_custom_blips = new QLineEdit(this);
+  ui_custom_blips->setFrame(false);
+  ui_custom_blips->setPlaceholderText(tr("Blips"));
+  ui_custom_blips->setObjectName("ui_custom_blips");
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
@@ -679,6 +684,8 @@ void Courtroom::set_widgets()
     ui_showname_enable->show();
     ui_ic_chat_name->show();
     ui_ic_chat_name->setEnabled(true);
+    ui_custom_blips->show();
+    ui_custom_blips->setEnabled(true);
   }
   else {
     ui_pair_button->hide();
@@ -686,6 +693,8 @@ void Courtroom::set_widgets()
     ui_showname_enable->hide();
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
+    ui_custom_blips->hide();
+    ui_custom_blips->setEnabled(false);
   }
 
   if (ao_app->casing_alerts_enabled) {
@@ -840,6 +849,7 @@ void Courtroom::set_widgets()
   }
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   set_size_and_pos(ui_ic_chat_name, "ao2_ic_chat_name");
+  set_size_and_pos(ui_custom_blips, "ao2_custom_blips");
 
   initialize_chatbox();
 
@@ -1580,6 +1590,18 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
   else {
     ui_ic_chat_name->setPlaceholderText("Spectator");
+  }
+  if (m_cid != -1) {
+    QString f_blipname = ao_app->read_char_ini(f_char, "blips", "Options");
+    if (f_blipname == "") {
+        f_blipname = read_char_ini(p_char, "gender", "Options");
+        if (f_blipname == "")
+          f_blipname = "male";
+      }
+    ui_custom_blips->setPlaceholderText(f_blipname);
+  }
+  else {
+    ui_custom_blips->setPlaceholderText("None");
   }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
@@ -3658,7 +3680,12 @@ void Courtroom::start_chat_ticking()
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
     gen_char_rgb_list(current_misc);
 
-  QString f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
+  if (!ui_custom_blips->text().isEmpty()) {
+    QString f_blips = ao_app->get_custom_blips(ui_custom_blips->text());
+  }
+  else {
+    QString f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
+  }
   blip_player->set_blips(f_blips);
 
   // means text is currently ticking
