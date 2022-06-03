@@ -2149,6 +2149,10 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
+  if (ao_app->cccc_ic_support_enabled) {
+    if (ui_custom_blips->text().isEmpty()) { packet_contents.append(ui_custom_blips->placeholderText()); }
+    else { packet_contents.append(ui_custom_blips->text()); }
+  }
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -3680,13 +3684,7 @@ void Courtroom::start_chat_ticking()
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
     gen_char_rgb_list(current_misc);
 
-  QString f_blips;
-  if (!ui_custom_blips->text().isEmpty()) {
-    f_blips = ao_app->get_custom_blips(ui_custom_blips->text());
-  }
-  else {
-    f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
-  }
+  QString f_blips = ao_app->get_custom_blips(m_chatmessage[BLIPNAME]);
   blip_player->set_blips(f_blips);
 
   // means text is currently ticking
