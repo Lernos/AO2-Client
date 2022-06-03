@@ -467,6 +467,9 @@ public:
 
   // Returns p_char's blips (previously called their "gender")
   QString get_blips(QString p_char);
+  
+  // Returns the path to custom blips set by the player
+  QString get_custom_blips(QString p_blipname);
 
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);

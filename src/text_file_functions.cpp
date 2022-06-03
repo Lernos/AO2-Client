@@ -653,6 +653,18 @@ QString AOApplication::get_blips(QString p_char)
   return f_result;
 }
 
+QString AOApplication::get_custom_blips(QString p_blipname)
+{
+  QString f_result = p_blipname;
+  if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
+    if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))
+      return "../blips/" + f_result; // Return the cool kids variant
+
+    return "sfx-blip" + f_result; // Return legacy variant
+  }
+  return f_result;
+}
+
 QString AOApplication::get_emote_property(QString p_char, QString p_emote,
                                           QString p_property)
 {
