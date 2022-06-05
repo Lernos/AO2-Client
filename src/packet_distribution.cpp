@@ -55,6 +55,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     additive_enabled = false;
     effects_enabled = false;
     y_offset_enabled = false;
+    custom_blips_enabled = false;
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -105,6 +106,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     effects_enabled = false;
     expanded_desk_mods_enabled = false;
     auth_packet_enabled = false;
+    custom_blips_enabled = false;
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_enabled = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -137,6 +139,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_enabled = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_enabled = true;
+    if (f_packet.contains("custom_blips", Qt::CaseInsensitive))
+      custom_blips_enabled = true;
     log_to_demo = false;
   }
   else if (header == "PN") {
