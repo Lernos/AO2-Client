@@ -465,9 +465,6 @@ public:
 
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
-
-  // Returns p_char's blips (previously called their "gender")
-  QString get_blips(QString p_char);
   
   // Returns p_char's blipname by reading char.ini for blips (previously called "gender")
   QString get_blipname(QString p_char);
