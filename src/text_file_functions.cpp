@@ -634,7 +634,7 @@ QString AOApplication::get_char_side(QString p_char)
   return f_result;
 }
 
-QString AOApplication::get_blips(QString p_char)
+QString AOApplication::get_blipname(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "blips", "Options");
 
@@ -643,26 +643,17 @@ QString AOApplication::get_blips(QString p_char)
     if (f_result == "")
       f_result = "male";
   }
-
-  if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
-    if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))
-      return "../blips/" + f_result; // Return the cool kids variant
-
-    return "sfx-blip" + f_result; // Return legacy variant
-  }
   return f_result;
 }
-
-QString AOApplication::get_custom_blips(QString p_blipname)
+QString AOApplication::get_blips(QString p_blipname)
 {
-  QString f_result = p_blipname;
-  if (!file_exists(get_sfx_suffix(get_sounds_path(f_result)))) {
-    if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + f_result))))
-      return "../blips/" + f_result; // Return the cool kids variant
+  if (!file_exists(get_sfx_suffix(get_sounds_path(p_blipname)))) {
+    if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + p_blipname))))
+      return "../blips/" + p_blipname; // Return the cool kids variant
 
-    return "sfx-blip" + f_result; // Return legacy variant
+    return "sfx-blip" + p_blipname; // Return legacy variant
   }
-  return f_result;
+  return p_blipname;
 }
 
 QString AOApplication::get_emote_property(QString p_char, QString p_emote,
