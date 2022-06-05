@@ -104,6 +104,7 @@ public:
   bool y_offset_enabled = false;
   bool expanded_desk_mods_enabled = false;
   bool auth_packet_enabled = false;
+  bool custom_blips_enabled = false;
 
   ///////////////loading info///////////////////
 
@@ -468,8 +469,11 @@ public:
   // Returns p_char's blips (previously called their "gender")
   QString get_blips(QString p_char);
   
-  // Returns the path to custom blips set by the player
-  QString get_custom_blips(QString p_blipname);
+  // Returns p_char's blipname by reading char.ini for blips (previously called "gender")
+  QString get_blipname(QString p_char);
+
+  // Returns p_blipname's sound(path) to play in the client
+  QString get_blips(QString p_blipname);
 
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
