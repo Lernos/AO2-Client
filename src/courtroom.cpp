@@ -684,8 +684,6 @@ void Courtroom::set_widgets()
     ui_showname_enable->show();
     ui_ic_chat_name->show();
     ui_ic_chat_name->setEnabled(true);
-    ui_custom_blips->show();
-    ui_custom_blips->setEnabled(true);
   }
   else {
     ui_pair_button->hide();
@@ -693,6 +691,13 @@ void Courtroom::set_widgets()
     ui_showname_enable->hide();
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
+  }
+  
+  if (ao_app->custom_blips_enabled) {
+    ui_custom_blips->show();
+    ui_custom_blips->setEnabled(true);
+  }
+  else {
     ui_custom_blips->hide();
     ui_custom_blips->setEnabled(false);
   }
@@ -1587,20 +1592,11 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
 
   if (m_cid != -1) {
     ui_ic_chat_name->setPlaceholderText(char_list.at(m_cid).name);
-  }
-  else {
-    ui_ic_chat_name->setPlaceholderText("Spectator");
-  }
-  if (m_cid != -1) {
-    QString f_blipname = ao_app->read_char_ini(f_char, "blips", "Options");
-    if (f_blipname == "") {
-        f_blipname = ao_app->read_char_ini(f_char, "gender", "Options");
-        if (f_blipname == "")
-          f_blipname = "male";
-      }
+    QString f_blipname = ao_app->get_blipname(f_char);
     ui_custom_blips->setPlaceholderText(f_blipname);
   }
   else {
+    ui_ic_chat_name->setPlaceholderText("Spectator");
     ui_custom_blips->setPlaceholderText("None");
   }
   ui_char_select_background->hide();
@@ -2149,7 +2145,7 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->cccc_ic_support_enabled) {
+  if (ao_app->custom_blips_enabled) {
     if (ui_custom_blips->text().isEmpty()) { packet_contents.append(ui_custom_blips->placeholderText()); }
     else { packet_contents.append(ui_custom_blips->text()); }
   }
@@ -3684,7 +3680,9 @@ void Courtroom::start_chat_ticking()
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
     gen_char_rgb_list(current_misc);
 
-  QString f_blips = ao_app->get_custom_blips(m_chatmessage[BLIPNAME]);
+  QString f_blips = ao_app->get_blipname(m_chatmessage[CHAR_NAME]);
+  f_blips = ao_app->get_blips(f_blips);
+  if (ao_app->custom_blips_enabled && !m_chatmessage[BLIPNAME].isEmpty()) {f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);}
   blip_player->set_blips(f_blips);
 
   // means text is currently ticking
