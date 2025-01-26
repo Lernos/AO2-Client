@@ -5107,7 +5107,7 @@ void Courtroom::on_ooc_return_pressed()
     casefile.setValue("doc", "");
     casefile.setValue("status", command[2]);
     casefile.sync();
-    static QRegularExpression owner_regexp("<owner=(.*?)>");
+    static QRegularExpression owner_regexp("<owner=(.*?)>\n");
     for (int i = 0; i < local_evidence_list.size(); i++)
     {
       QString clean_evidence_dsc = local_evidence_list[i].description.replace(owner_regexp, "");
