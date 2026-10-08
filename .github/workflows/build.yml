@@ -1,5 +1,4 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+# This starter workflow is for a CMake project running on multiple platforms.
 name: CI Build
 
 on:
@@ -23,12 +22,17 @@ jobs:
 
   build-windows:
     needs: formatting-check
-    runs-on: windows-latest
+
+    # Qt 6.5.3 is installed as msvc2019_64, so use the
+    # Windows runner with Visual Studio 2019 rather than
+    # windows-latest (which now uses VS2026).
+    runs-on: windows-2019
+
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
-      
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
@@ -50,7 +54,7 @@ jobs:
           cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib/
           cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./bin/
           cp ./discord-rpc/win64-dynamic/include/discord*.h ./lib/
-          
+
       - name: Install Windows BASS
         shell: bash
         run: |
@@ -62,12 +66,12 @@ jobs:
 
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/c/bassopus.h ./lib
+          cp ./bass/c/bassopus.h ./lib/
           cp ./bass/c/x64/bassopus.lib ./lib/
           cp ./bass/x64/bassopus.dll ./bin/
 
       - name: Clone Apng plugin
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           repository: jurplel/QtApng
           path: ./qtapng
@@ -90,7 +94,7 @@ jobs:
           windeployqt --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./Attorney_Online.exe
 
       - name: Clone Themes
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           repository: AttorneyOnline/AO2-Themes
           path: "bin/base/themes"
@@ -102,16 +106,16 @@ jobs:
           Remove-Item -Path "./bin/base/themes/.git" -Recurse -Force
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: Attorney_Online-Windows
           path: ${{github.workspace}}/bin
-  
+
   build-linux:
     needs: formatting-check
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -147,10 +151,10 @@ jobs:
           unzip -d bass -o bassopus.zip
           cp ./bass/bassopus.h ./lib
           cp ./bass/libs/x86_64/libbassopus.so ./lib/
-          cp ./bass/libs/x86_64/libbassopus.so ./bin/
+          cp ./bass/x64/bassopus.dll ./bin/
 
       - name: Clone Apng plugin
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           repository: jurplel/QtApng
           path: ./qtapng
@@ -170,7 +174,7 @@ jobs:
           cmake --build . --config Release
 
       - name: Clone Themes
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           repository: AttorneyOnline/AO2-Themes
           path: "bin/base/themes"
@@ -200,6 +204,7 @@ jobs:
         run: |
           # necessary, apparently
           sudo apt install libxcb-cursor0
+
           # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
           wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
           mv appimagetool-*-x86_64.AppImage appimagetool
@@ -227,13 +232,13 @@ jobs:
           tar --transform='flags=r;s|bin-appimage|Attorney_Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
 
       - name: Upload Dynamic Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: Attorney_Online-Linux-Dynamic
           path: Attorney_Online-Dynamic.tar
 
       - name: Upload AppImage Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: Attorney_Online-Linux-AppImage
           path: Attorney_Online-AppImage.tar
