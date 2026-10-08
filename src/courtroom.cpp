@@ -6,6 +6,8 @@
 
 #include <QtConcurrent/QtConcurrent>
 
+static const QString SFX_MARKER = QStringLiteral("\u2706"); // ✆
+
 // #define DEBUG_TRANSITION
 
 Courtroom::Courtroom(AOApplication *p_ao_app)
@@ -3467,6 +3469,7 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
   int check_pos = 0;
   int check_pos_escaped = 0;
   bool parse_escape_seq = false;
+  bool in_sfx = false;
   std::stack<int> ic_color_stack;
 
   // Text alignment shenanigans. Could make a dropdown for this later, too!
@@ -3563,7 +3566,17 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
 
     if (!parse_escape_seq)
     {
-      if (f_character == "\\")
+      // SFX markers: ✆sfx_name✆ (hidden here, played in chat_tick)
+      if (f_character == SFX_MARKER && (in_sfx || p_text.indexOf(SFX_MARKER, check_pos + f_char_bytes) != -1))
+      {
+        in_sfx = !in_sfx; // opening or closing marker
+        skip = true;
+      }
+      else if (in_sfx)
+      {
+        skip = true; // the sfx name itself
+      }
+      else if (f_character == "\\")
       {
         parse_escape_seq = true;
         skip = true;
@@ -4309,7 +4322,20 @@ void Courtroom::chat_tick()
   // Escape character.
   if (!next_character_is_not_special)
   {
-    if (f_character == "\\")
+    // SFX markers: ✆sfx_name✆
+    if (f_character == SFX_MARKER && f_message.indexOf(SFX_MARKER, tick_pos) != -1)
+    {
+      // tick_pos is already past the opening marker here
+      int sfx_end = f_message.indexOf(SFX_MARKER, tick_pos);
+      QString sfx_name = f_message.mid(tick_pos, sfx_end - tick_pos).trimmed();
+      if (!sfx_name.isEmpty())
+      {
+        sfx_player->findAndPlaySfx(sfx_name);
+      }
+      tick_pos = sfx_end + SFX_MARKER.length(); // skip the name and the closing marker
+      formatting_char = true;
+    }
+    else if (f_character == "\\")
     {
       next_character_is_not_special = true;
       formatting_char = true;
