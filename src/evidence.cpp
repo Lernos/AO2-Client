@@ -1,5 +1,6 @@
 #include "courtroom.h"
 #include "options.h"
+#include <algorithm>
 
 void Courtroom::initialize_evidence()
 {
@@ -864,7 +865,27 @@ void Courtroom::evidence_load(QString filename)
   inventory.setIniCodec("UTF-8");
 #endif
   private_evidence_list.clear();
-  foreach (QString evi, inventory.childGroups())
+
+  // childGroups() comes back in string order ("0", "1", "10", "11", "2", ...),
+  // so sort the group names by their numeric value instead.
+  QStringList groups = inventory.childGroups();
+  std::sort(groups.begin(), groups.end(), [](const QString &a, const QString &b) {
+    bool a_ok = false;
+    bool b_ok = false;
+    const int a_num = a.toInt(&a_ok);
+    const int b_num = b.toInt(&b_ok);
+    if (a_ok && b_ok)
+    {
+      return a_num < b_num;
+    }
+    if (a_ok != b_ok)
+    {
+      return a_ok; // numbered groups first, anything else after
+    }
+    return a < b; // non-numeric names keep plain string order
+  });
+
+  foreach (QString evi, groups)
   {
     if (evi == "General")
     {
